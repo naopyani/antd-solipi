@@ -1,94 +1,105 @@
 <template>
-  <div id="components-form-demo-advanced-search">
-    <a-form class="ant-advanced-search-form" :form="form" @submit="handleSearch">
-      <a-row :gutter="24">
-        <a-col
-                v-for="(item,i) in searchName"
-                :key="i"
-                :span="6"
-                :style="{ display: i < count ? 'block' : 'none' }"
-        >
-          <a-form-item :label="item">
-            <a-input v-decorator="[
+  <a-row>
+    <a-col :xs="2" :sm="3" :md="4">
+      <sptree @getPath="getCurrentPath" @searchDetail="searchDetail" ref="sptree"></sptree>
+    </a-col>
+    <a-col :xs="22" :sm="21" :md="20">
+      <div id="components-form-demo-advanced-search" :span="18">
+        <a-form class="ant-advanced-search-form" :form="form" @submit="handleSearch">
+          <a-row :gutter="24">
+            <a-col
+                    v-for="(item,i) in searchName"
+                    :key="i"
+                    :span="6"
+                    :style="{ display: i < count ? 'block' : 'none' }"
+            >
+              <a-form-item :label="item">
+                <a-input v-decorator="[
                 item
               ]" :placeholder="item" />
-          </a-form-item>
-        </a-col>
-        <a-col :span="6" :style="{ textAlign: 'right' }">
-          <a-button type="primary" html-type="submit">查询</a-button>
-          <a-button :style="{ marginLeft: '8px' }" @click="handleReset">清空</a-button>
-        </a-col>
-      </a-row>
-      <a-row>
-        <a-col :span="22" :style="{ textAlign: 'right' }">
-          <div class="clearfix">
-            <a-upload :fileList="fileList" :remove="handleRemove" :beforeUpload="beforeUpload">
-              <a-button>
-                <a-icon type="select" />选择文件
-              </a-button>
-            </a-upload>
-          </div>
-        </a-col>
-        <a-col :span="2" :style="{ textAlign: 'left' }">
-          <div class="clearfix">
-            <a-button
-                    type="primary"
-                    @click="handleUpload"
-                    :disabled="fileList.length === 0"
-                    :loading="uploading"
-            >
-              <a-icon type="upload" />
-              {{uploading ? '上传中' : '上传文件' }}
-            </a-button>
-          </div>
-        </a-col>
-      </a-row>
-    </a-form>
-    <div class="search-result-list">
-      <a-table
-              :rowKey="record => record.id"
-              :dataSource="data"
-              :pagination="pagination"
-              :loading="loading"
-              @change="handleTableChange"
-      >
-        <a-table-column title="ID" data-index="id" key="id" />
-        <a-table-column title="NAME" data-index="name" key="name" />
-        <a-table-column title="用例描述" data-index="description" key="description" />
-        <a-table-column title="最近更新时间" data-index="addtime" key="addtime" />
-        <a-table-column title="操作" key="operation">
-          <template slot-scope="text, record">
-            <span>
-              <a type="primary" @click="showModal(record)">查看详情</a>
-              <a-modal
-                      title="详情"
-                      :footer="null"
-                      v-model="visible"
-                      width="60%"
-                      :mask="true"
-                      :maskClosable="false"
-                      :maskStyle="{opacity: 0.2, background: '#fbfbfb'}"
-              >
-                <pre>{{ viewDetailData }}</pre>
-              </a-modal>
-              <a-divider type="vertical" />
-              <a-popconfirm v-if="data.length" title="确定删除?" @confirm="del(record)">
-                <a href="javascript:;">删除</a>
-              </a-popconfirm>
-              <a-divider type="vertical" />
-              <a @click="downloadSP(record)">下载</a>
-            </span>
-          </template>
-        </a-table-column>
-      </a-table>
-    </div>
-  </div>
+              </a-form-item>
+            </a-col>
+            <a-col :span="6" :style="{ textAlign: 'right' }">
+              <a-button type="primary" html-type="submit">查询</a-button>
+              <a-button :style="{ marginLeft: '8px' }" @click="handleReset">清空</a-button>
+            </a-col>
+          </a-row>
+          <a-row>
+            <a-col :span="22" :style="{ textAlign: 'right' }">
+              <div class="clearfix">
+                <a-upload :fileList="fileList" :remove="handleRemove" :beforeUpload="beforeUpload">
+                  <a-button>
+                    <a-icon type="select" />选择文件
+                  </a-button>
+                </a-upload>
+              </div>
+            </a-col>
+            <a-col :span="2" :style="{ textAlign: 'left' }">
+              <div class="clearfix">
+                <a-button
+                        type="primary"
+                        @click="handleUpload"
+                        :disabled="fileList.length === 0"
+                        :loading="uploading"
+                >
+                  <a-icon type="upload" />
+                  {{uploading ? '上传中' : '上传文件' }}
+                </a-button>
+              </div>
+            </a-col>
+          </a-row>
+        </a-form>
+        <div class="search-result-list">
+          <a-table
+                  :rowKey="record => record.id"
+                  :dataSource="data"
+                  :pagination="pagination"
+                  :loading="loading"
+                  @change="handleTableChange"
+          >
+            <a-table-column title="ID" data-index="id" key="id" />
+            <a-table-column title="NAME" data-index="name" key="name" />
+            <a-table-column title="用例描述" data-index="description" key="description" />
+            <a-table-column title="最近更新时间" data-index="addtime" key="addtime" />
+            <a-table-column title="操作" key="operation">
+              <template slot-scope="text, record">
+                <span>
+                  <a type="primary" @click="showModal(record)">查看详情</a>
+                  <a-modal
+                          title="详情"
+                          :footer="null"
+                          v-model="visible"
+                          width="60%"
+                          :mask="true"
+                          :maskClosable="false"
+                          :maskStyle="{opacity: 0.2, background: '#fbfbfb'}"
+                  >
+                    <pre>{{ viewDetailData }}</pre>
+                  </a-modal>
+                  <a-divider type="vertical" />
+                  <a-popconfirm v-if="data.length" title="确定删除?" @confirm="del(record)">
+                    <a href="javascript:;">删除</a>
+                  </a-popconfirm>
+                  <a-divider type="vertical" />
+                  <a @click="downloadSP(record)">下载</a>
+                </span>
+              </template>
+            </a-table-column>
+          </a-table>
+        </div>
+      </div>
+    </a-col>
+  </a-row>
 </template>
 <script>
   import reqwest from "reqwest";
-  import FileSaver from 'file-saver';
+  import FileSaver from "file-saver";
+  import sptree from "./SPTree.vue";
 
   export default {
+    components: {
+      sptree
+    },
     mounted() {
       this.fetch();
     },
@@ -104,7 +115,8 @@
         uploading: false,
         searchData: {},
         viewDetailData: {},
-        visible: false
+        visible: false,
+        currentPath: "SoloPi"
       };
     },
     computed: {
@@ -113,7 +125,16 @@
       }
     },
     methods: {
+      // 把子组重的值传递给父组件
+      getCurrentPath(path) {
+        // eslint-disable-next-line no-console
+        console.log("此时父组件当前路径为", path);
+        this.currentPath = path;
+      },
       downloadSP(record) {
+        if (this.currentPath.indexOf(".json") != -1) {
+          return this.$message.error("请在左侧选择该文件的父级目录！");
+        }
         var that = this;
         that.loading = true;
         // eslint-disable-next-line no-console
@@ -124,12 +145,16 @@
           method: "get",
           contentType: false, //必须false才会自动加上正确的Content-Type
           data: {
-            name: record.name.replace(".json", "")
+            name: record.name.replace(".json", ""),
+            path: this.currentPath
           }
         }).then(data => {
+          that.loading = false;
           // eslint-disable-next-line no-console
           console.log(data);
-          that.loading = false;
+          if (data.msg) {
+            return this.$message.error(data.msg);
+          }
           const dataJson = JSON.stringify(data);
           // 导出文件
           const blob = new Blob([dataJson], { type: "" });
@@ -138,6 +163,9 @@
         });
       },
       showModal(record) {
+        if (this.currentPath.indexOf(".json") != -1) {
+          return this.$message.error("请在左侧选择该文件的父级目录！");
+        }
         // eslint-disable-next-line no-console
         console.log(record);
         this.loading = true;
@@ -146,7 +174,8 @@
           method: "post",
           contentType: false, //必须false才会自动加上正确的Content-Type
           data: {
-            name: record.name
+            name: record.name,
+            path: this.currentPath
           }
         }).then(data => {
           // eslint-disable-next-line no-console
@@ -157,20 +186,24 @@
         });
       },
       del(record) {
+        if (this.currentPath.indexOf(".json") != -1) {
+          return this.$message.error("请在左侧选择该文件的父级目录！");
+        }
         reqwest({
           url: "http://127.0.0.1:5000/splist/dellist/",
           method: "get",
           contentType: false,
           data: {
             id: record.id,
-            name: record.name
+            name: record.name,
+            path: this.currentPath
           },
           type: "json"
         }).then(data => {
           // eslint-disable-next-line no-console
           console.log(data.msg);
           this.$message.success(data.msg);
-          this.loading = true;
+          this.$refs.sptree.refresh();
           this.searchDetail();
         });
       },
@@ -204,12 +237,14 @@
         const { fileList } = this;
         const formData = new FormData();
         fileList.forEach(file => {
-          formData.append("files[]", file);
+          formData.append("files", file);
+          formData.append("path", this.currentPath);
         });
         // eslint-disable-next-line no-console
         console.log(fileList);
         this.uploading = true;
-
+        // eslint-disable-next-line no-console
+        console.log(formData);
         // You can use any AJAX library you like
         reqwest({
           url: "http://127.0.0.1:5000/upload",
@@ -221,14 +256,12 @@
             this.fileList = [];
             this.uploading = false;
             this.$message.success("上传成功！");
-            this.loading = true;
+            this.$refs.sptree.refresh();
             this.searchDetail();
           },
           error: () => {
             this.uploading = false;
             this.$message.error("上传失败！");
-            this.loading = true;
-            this.searchDetail();
           }
         });
       },
@@ -242,6 +275,7 @@
           this.searchData["id"] = this.paseStr(values["ID"]);
           this.searchData["name"] = this.paseStr(values["NAME"]);
           this.searchData["description"] = this.paseStr(values["用例描述"]);
+          this.searchData["path"] = this.currentPath;
           // eslint-disable-next-line no-console
           console.log(this.searchData);
           this.searchDetail(this.searchData);
@@ -266,28 +300,7 @@
       fetch(params = {}) {
         // eslint-disable-next-line no-console
         console.log("params:", params);
-        this.loading = true;
-        reqwest({
-          url: "http://127.0.0.1:5000/splist/",
-          method: "get",
-          contentType: false,
-          data: {
-            results: 10
-          },
-          type: "json"
-        }).then(data => {
-          // eslint-disable-next-line no-console
-          console.log(data);
-          const pagination = { ...this.pagination };
-          // Read total count from server
-          // pagination.total = data.totalCount;
-          pagination.total = 10;
-          this.loading = false;
-          this.data = data;
-          // eslint-disable-next-line no-console
-          console.log(this.data);
-          this.pagination = pagination;
-        });
+        this.searchDetail();
       },
       paseStr(str) {
         if (str === undefined) {
@@ -295,7 +308,10 @@
         }
         return str;
       },
-      searchDetail(searchdict = { id: "", name: "", description: "" }) {
+      searchDetail(
+              searchdict = { id: "", name: "", description: "", path: this.currentPath }
+      ) {
+        this.loading = true;
         reqwest({
           url: "http://127.0.0.1:5000/splist/searchlist",
           method: "post",
@@ -315,6 +331,7 @@
             // eslint-disable-next-line no-console
             console.log(this.data);
             this.pagination = pagination;
+            this.form.resetFields();
           }
         });
       }
